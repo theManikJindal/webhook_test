@@ -1,0 +1,192 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "GitHub WebHook API",
+        "version": "v4"
+    },
+    "host": "api.github.com",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/vnd.github.v3+json"
+    ],
+    "parameters": {
+        "user_param": {
+            "name": "user",
+            "in": "path",
+            "description": "GitHub user",
+            "required": true,
+            "type": "string"
+        },
+        "repo_param": {
+            "name": "repo",
+            "in": "path",
+            "description": "repository",
+            "required": true,
+            "type": "string"
+        }
+    },
+    "definitions": {
+        "hook_config": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-ms-notification-url": true,
+                    "x-ms-visibility": "internal"
+                },
+                "content_type": {
+                    "type": "string",
+                    "enum": [
+                        "json",
+                        "form"
+                    ],
+                    "default": "form"
+                }
+            }
+        },
+        "hook_events": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "*",
+                    "Text",
+                    "commit_comment",
+                    "create",
+                    "delete",
+                    "deployment",
+                    "deployment_status",
+                    "fork",
+                    "gollum",
+                    "issue_comment",
+                    "issues",
+                    "label",
+                    "member",
+                    "membership",
+                    "milestone",
+                    "organization",
+                    "page_build",
+                    "public",
+                    "pull_request_review_comment",
+                    "pull_request_review",
+                    "pull_request",
+                    "push",
+                    "repository",
+                    "release",
+                    "status",
+                    "team",
+                    "team_add",
+                    "watch"
+                ]
+            },
+            "default": [
+                "push"
+            ]
+        }
+    },
+    "paths": {
+        "/repos/{user}/{repo}/hooks": {
+            "post": {
+                "description": "Create New Hook",
+                "x-ms-trigger": "single",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/user_param"
+                    },
+                    {
+                        "$ref": "#/parameters/repo_param"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "required": [
+                                "name",
+                                "active",
+                                "config",
+                                "events"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "description": "name of service",
+                                    "type": "string",
+                                    "enum": [
+                                        "web"
+                                    ]
+                                },
+                                "active": {
+                                    "description": "Is active?",
+                                    "type": "boolean"
+                                },
+                                "config": {
+                                    "$ref": "#/definitions/hook_config"
+                                },
+                                "events": {
+                                    "$ref": "#/definitions/hook_events"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created Succesfully.",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Either /{user}/{repo} does not exist or Authoriation Failure",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/repos/{user}/{repo}/hooks/{hook_id}": {
+            "delete": {
+                "description": "Delete existing webhook",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/user_param"
+                    },
+                    {
+                        "$ref": "#/parameters/repo_param"
+                    },
+                    {
+                        "name": "hook_id",
+                        "in": "path",
+                        "description": "Web Hook identifier",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Succesfully deleted",
+                        "schema": {}
+                    }
+                }
+            }
+        }
+    }
+}
