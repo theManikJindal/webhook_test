@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "GitHub WebHook API",
-        "version": "v4"
+        "version": "3"
     },
     "host": "api.github.com",
     "schemes": [
@@ -139,6 +139,14 @@
                         }
                     }
                 ],
+                "x-ms-notification-content": {
+                	"description": "Respone From GitHub",
+                	"schema": {
+                		"id": {
+                			"type": "string"
+                		}
+                	}
+                },
                 "responses": {
                     "201": {
                         "description": "Created Succesfully.",
